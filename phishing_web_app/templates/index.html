@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Transformer-based Email Classification (BERT)</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="theme-dark">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fw-semibold" href="#">
+                <span class="brand-gradient">BERT Email Classifier</span>
+            </a>
+
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="btn btn-outline-light btn-sm">
+                🌙 Dark
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="row g-4">
+            <!-- Left: Input & Result -->
+            <div class="col-lg-6">
+                <div class="card card-glass p-4 mb-4">
+                    <h1 class="h4 fw-semibold body-text mb-2">
+                        <strong>Transformer-based Email Classification (BERT)</strong>
+                    </h1>
+                    <p class="muted-text mb-3">
+                        Enter an email body below. The model will classify it as a
+                        <span class="text-legit">legitimate email</span> or a
+                        <span class="text-phish">phishing email</span> using a fine-tuned BERT model.
+                    </p>
+
+                    <form method="POST" class="mt-3">
+                        <label for="input_text" class="form-label fw-semibold">
+                            Email Content
+                        </label>
+                        <textarea
+                            id="input_text"
+                            name="input_text"
+                            class="form-control email-textarea"
+                            placeholder="Paste the email text here..."
+                        >{{ input_text }}</textarea>
+
+                        <button type="submit" class="btn btn-primary mt-3 w-100">
+                            Analyze Email
+                        </button>
+                    </form>
+                </div>
+
+                {% if result_label %}
+                <div class="card card-glass p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="section-title body-text">Prediction Result</span>
+                    </div>
+
+                    <h2 class="h5 mb-3">
+                        {% if "Phishing" in result_label %}
+                            <span class="badge badge-phish me-2">Phishing</span>
+                        {% else %}
+                            <span class="badge badge-legit me-2">Legitimate</span>
+                        {% endif %}
+                        {{ result_label }}
+                    </h2>
+
+                    <p class="mb-1">
+                        <span class="fw-semibold">Confidence:</span>
+                        {{ "%.2f" | format(confidence) }}%
+                    </p>
+
+                    <p class="small muted-text mt-3 mb-0">
+                        The confidence score represents the model’s probability for the predicted class.
+                        It is computed from the output logits using a softmax layer.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Right: Project Explanation -->
+            <div class="col-lg-6">
+                <div class="card card-glass p-4 mb-3">
+                    <div class="section-title body-text mb-2">Problem Statement</div>
+                    <h2 class="h5 fw-semibold body-text mb-2">
+                        Transformer-based Email Classification (BERT)
+                    </h2>
+                    <p class="mb-2 body-text">
+                        Email remains one of the primary channels for phishing attacks, where malicious
+                        actors attempt to trick users into revealing sensitive information or installing
+                        malware. Traditional rule-based filters struggle to keep up with evolving attack
+                        patterns and adversarial content.
+                    </p>
+                    <p class="mb-0 body-text">
+                        This project aims to build an intelligent email classification system that can
+                        automatically detect phishing emails using a modern Transformer-based architecture
+                        (BERT – Bidirectional Encoder Representations from Transformers).
+                    </p>
+                </div>
+
+                
+            </div>
+            <div class="card card-glass p-4 mb-3">
+                    <div class="section-title body-text mb-2">Approach & Model</div>
+                    <ul class="mb-2 body-text">
+                        <li>
+                            <strong>Model:</strong> Pre-trained <code>bert-base-uncased</code> fine-tuned
+                            for binary classification (Legitimate vs Phishing).
+                        </li>
+                        <li>
+                            <strong>Input:</strong> Raw email text (subject + body or body only).
+                        </li>
+                        <li>
+                            <strong>Representation:</strong> Email text is tokenized using BERT’s WordPiece tokenizer,
+                            truncated/padded to a fixed length (e.g., 128 tokens).
+                        </li>
+                        <li>
+                            <strong>Training:</strong> The final classification layer on top of BERT is trained using a labeled dataset of phishing and non-phishing emails.
+                        </li>
+                        <li>
+                            <strong>Output:</strong> A probability distribution over the two classes with
+                            the higher one selected as the prediction.
+                        </li>
+                    </ul>
+                    <p class="small muted-text mb-0">
+                        Using BERT allows the model to capture contextual meaning within the email text,
+                        making it more robust to obfuscated or cleverly worded phishing attempts.
+                    </p>
+                </div>
+
+                <div class="card card-glass p-4" >
+                    <div class="section-title body-text mb-2">How to Use This Web App</div>
+                    <ol class="mb-2 body-text">
+                        <li>Copy the content of a suspicious or normal email.</li>
+                        <li>Paste it into the text box on the left.</li>
+                        <li>Click <strong>“Analyze Email”</strong>.</li>
+                        <li>View the predicted label and confidence score.</li>
+                    </ol>
+                    <p class="small muted-text mb-0">
+                        <strong>Note:</strong> This system is a proof-of-concept for academic and research
+                        purposes. It should complement, not replace, existing security solutions.
+                    </p>
+                </div>
+        </div>
+
+        <div class="footer text-center">
+            Transformer-based Email Classification (BERT) &middot;
+            Built with Python, PyTorch, HuggingFace Transformers, and Flask.
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const body = document.body;
+        const toggleBtn = document.getElementById("themeToggle");
+
+        // Load saved theme from localStorage
+        const savedTheme = localStorage.getItem("theme") || "dark";
+        if (savedTheme === "light") {
+            body.classList.remove("theme-dark");
+            body.classList.add("theme-light");
+            toggleBtn.textContent = "☀️ Light";
+            toggleBtn.classList.remove("btn-outline-light");
+            toggleBtn.classList.add("btn-outline-dark");
+        } else {
+            body.classList.remove("theme-light");
+            body.classList.add("theme-dark");
+            toggleBtn.textContent = "🌙 Dark";
+            toggleBtn.classList.remove("btn-outline-dark");
+            toggleBtn.classList.add("btn-outline-light");
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            if (body.classList.contains("theme-dark")) {
+                body.classList.remove("theme-dark");
+                body.classList.add("theme-light");
+                toggleBtn.textContent = "☀️ Light";
+                toggleBtn.classList.remove("btn-outline-light");
+                toggleBtn.classList.add("btn-outline-dark");
+                localStorage.setItem("theme", "light");
+            } else {
+                body.classList.remove("theme-light");
+                body.classList.add("theme-dark");
+                toggleBtn.textContent = "🌙 Dark";
+                toggleBtn.classList.remove("btn-outline-dark");
+                toggleBtn.classList.add("btn-outline-light");
+                localStorage.setItem("theme", "dark");
+            }
+        });
+    </script>
+</body>
+</html>
